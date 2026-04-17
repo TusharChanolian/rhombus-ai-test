@@ -3,8 +3,8 @@ import numpy as np
 import sys
 import re
 
-INPUT_FILE = "/data-validation/Messy_Employee_dataset.csv"
-OUTPUT_FILE = "/data-validation/cleaned_employee_dataset.csv"
+INPUT_FILE = "data-validation/Messy_Employee_dataset.csv"
+OUTPUT_FILE = "data-validation/cleaned_employee_dataset.csv"
 
 
 passed = 0
@@ -13,10 +13,10 @@ failed = 0
 def check(name, condition, detail=""):
     global passed, failed
     if condition:
-        print(f"  ✅ PASS  {name}")
+        print(f" PASS  {name}")
         passed += 1
     else:
-        print(f"  ❌ FAIL  {name}")
+        print(f" FAIL  {name}")
         if detail:
             print(f"          → {detail}")
         failed += 1
@@ -246,9 +246,9 @@ total = passed + failed
 print(f"\n{'═' * 60}")
 print(f"  RESULTS:  {passed}/{total} checks passed")
 if failed == 0:
-    print("  🎉 All checks passed! Data transformation is valid.")
+    print(" All checks passed! Data transformation is valid.")
 else:
-    print(f"  ⚠️  {failed} check(s) failed. Review the details above.")
+    print(f" {failed} check(s) failed. Review the details above.")
 print(f"{'═' * 60}\n")
 
 sys.exit(0 if failed == 0 else 1)
