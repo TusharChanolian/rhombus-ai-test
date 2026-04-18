@@ -1,0 +1,24 @@
+{
+  "name": "rhombus-ai-test",
+  "version": "1.0.0",
+  "description": "Rhombus AI take home exercise for Software Engineer test intern.",
+  "main": "playwright.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TusharChanolian/rhombus-ai-test.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TusharChanolian/rhombus-ai-test/issues"
+  },
+  "homepage": "https://github.com/TusharChanolian/rhombus-ai-test#readme",
+  "dependencies": {
+    "@playwright/test": "^1.59.1",
+    "dotenv": "^17.4.2"
+  }
+}
