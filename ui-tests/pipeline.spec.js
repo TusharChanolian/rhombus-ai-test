@@ -98,13 +98,7 @@ test.describe('Rhombus AI – AI Pipeline Flow', () => {
       await page.getByRole('button', { name: 'Continue' }).click();
       console.log('Follow-up prompt answered');
     }
-    
-    // // ── Steps 7-10: Use existing project instead of creating new one ─────────
-    // // Navigate to existing project
-    // await page.getByTestId('project-card').first().click();
-
-    // console.log('Opened existing project');
-
+  
     // ── Step 11: Wait for canvas to load ────────────────────────────────────
     await page.getByRole('button', { name: 'Run Pipeline' })
       .waitFor({ state: 'visible', timeout: 60000 });
