@@ -23,6 +23,7 @@ def check(test_name, condition, detail=''):
             print(f'          → {detail}')
         failed += 1
 
+# Test 1: Dataset Upload (Positive Test)
 def test_dataset_upload():
     print('\n' + '─' * 60)
     print('  Test 1 · Dataset Upload')
@@ -81,6 +82,7 @@ def test_dataset_upload():
 
     print(f'\n  Upload response: id={body.get("id")}, size={body.get("file_size")} bytes')
 
+# Test 2: Upload Invalid File (Negative Test)
 def test_dataset_upload_invalid_file():
     print('\n' + '─' * 60)
     print('  Test 2 · Upload Invalid File (Negative Test)')
@@ -109,6 +111,7 @@ def test_dataset_upload_invalid_file():
 
     print(f'  Server response: {response.status_code} - {response.text[:100]}')
 
+# Test 3: Download Pipeline Output
 def test_download_output():
     print('\n' + '─' * 60)
     print('  Test 3 · Download Pipeline Output')
