@@ -23,13 +23,13 @@ The test dataset used is the [Messy Employee Dataset](https://www.kaggle.com/dat
 ```
 rhombus-ai-test/
 ├── ui-tests/
-│   └── pipeline.spec.js       # Playwright UI automation test
+│   └── pipeline.spec.js          # Playwright UI automation test
 ├── api-tests/
-│   └── api_tests.py           # Python API tests
+│   └── api_tests.py              # Python API tests
 ├── data-validation/
-│   ├── Messy_Employee_dataset.csv      # Original input
-│   ├── cleaned_employee_dataset.csv    # Cleaned output from Rhombus AI
-│   └── validate.py            # Data validation script
+│   ├── Messy_Employee_dataset.csv       # Original messy input
+│   ├── cleaned_employee_dataset.csv     # Cleaned output from Rhombus AI
+│   └── validate.py               # Data validation script
 ├── playwright.config.js
 ├── package.json
 ├── package-lock.json
@@ -103,10 +103,16 @@ npx playwright test ui-tests/pipeline.spec.js
 - Downloads the result as CSV
 - Asserts the downloaded file is a valid CSV
 
+**Important before running:**
+> ⚠️ Make sure there are no existing projects in your Rhombus AI account before running. The file attachment button uses a positional selector `nth(2)` which assumes zero existing projects. Each existing project shifts the button position by one. Use a fresh account or delete all existing projects first for a reliable run.
+
 **Notes:**
 - Runs in headed mode (browser is visible) by default
 - The pipeline can take 1-3 minutes to run — the test waits automatically
 - The tutorial popup only appears on first login — the test handles both cases
+
+**Why email/password instead of Google login:**
+I initially signed up with Google OAuth but ran into a problem — Google actively blocks sign-in attempts from automated browsers for security reasons. On top of that, Rhombus AI doesn't let you add a password to an account that was created with Google. So I created a separate test account with email and password specifically for automation. This is actually the standard industry approach anyway. Credentials go in `.env` so they never appear in the repo.
 
 ---
 
@@ -129,11 +135,22 @@ python api-tests/api_tests.py
 - ✅ Download endpoints
 - ✅ Error handling for invalid input (negative test)
 
-**Key findings:**
-- **Key findings:**
-- The upload endpoint accepts text-based files but correctly identifies them via `content_type` — a txt file returns `text/plain` instead of `text/csv`, which our negative test asserts on
-- When tested with a JPEG image (using real magic bytes `\xff\xd8\xff\xe0`), the server correctly returns 500 with an explicit error: `"Unsupported content type: image/jpeg"` — confirming binary file validation is enforced at the upload stage
-- File type validation happens at the upload stage for binary formats (images) but not for text-based formats (txt) — an interesting architectural observation
+**How I found the endpoints:**
+Rhombus AI doesn't have public API docs so I recorded a HAR file while using the app manually and identified all the real network calls being made. This is the black-box approach the exercise described.
+
+**Interesting findings:**
+- When I uploaded a plain text file, the server accepted it but correctly returned `content_type: text/plain` instead of `text/csv` — so text-based format validation happens downstream not at upload
+- When I tested with a JPEG image (using real magic bytes `\xff\xd8\xff\xe0`), the server returned 500 with an explicit error: `"Unsupported content type: image/jpeg"` — meaning binary file validation IS enforced at the upload stage
+- The negative test asserts on the txt file returning a non-CSV content type, which passes correctly
+
+**⚠️ Important note on the download test:**
+The download test relies on an existing pipeline output from a previously run project. During the demo video recording, existing projects had to be deleted to run the UI automation test cleanly due to the positional selector limitation described above. This caused the download test to fail in the video as the output no longer existed — I explained this at the end of the video.
+
+To run all 3 API tests successfully:
+1. First run the UI test to create a new project and pipeline
+2. Open your Rhombus AI account and note the new project ID and node name from the network calls
+3. Update the `PROJECT_ID` and `NODE_NAME` variables in `api_tests.py` with those values
+4. Then run the API tests
 
 ---
 
@@ -174,18 +191,19 @@ python validate.py
 ## Design Decisions & Trade-offs
 
 ### UI Testing
-- Used Playwright's built-in auto-waiting instead of fixed sleeps throughout
-- The send button selector uses `nth(4)` due to no accessible `aria-label` on the icon button — this is noted as a known fragility
-- The pipeline auto-runs after creation so no manual "Run Pipeline" click is needed
-- Session is handled via email/password login stored in `.env` to avoid Google OAuth restrictions in automated browsers
+- No `waitForTimeout` blind sleeps anywhere — everything uses Playwright's built-in auto-waiting
+- Pipeline completion is detected by watching the run button switch from its red destructive state back to normal, rather than waiting a fixed amount of time
+- The `nth(2)` selector for the attachment button is a known limitation — it depends on having zero existing projects. Documented above
+- The `nth(4)` selector for the send button is also positional due to no accessible aria-label on the icon — noted as a limitation
+- Google OAuth couldn't be automated so a separate email/password test account was created — this is the recommended industry approach
 
 ### API Testing
-- Used Python `requests` library rather than Playwright's API testing due to NextAuth.js login restrictions in headless environments
-- JWT token is stored in `.env` and obtained manually from browser DevTools — this is documented clearly for reviewers
-- All endpoints were identified through HAR file capture during manual UI testing (black-box approach)
-- Negative test uses JPEG magic bytes (`\xff\xd8\xff\xe0`) for a realistic file simulation
+- Used Python `requests` instead of Playwright's built-in API testing because NextAuth.js login doesn't work cleanly in headless environments via direct API calls
+- JWT token is grabbed manually from browser DevTools and stored in `.env` — this is explained clearly so reviewers can get their own
+- All endpoints discovered through HAR file capture — pure black-box, no guessing about internals
+- The download test has a known dependency on an existing project — documented above with steps to resolve
 
 ### Data Validation
-- Script validates what the pipeline actually promised to do, not what could theoretically be done
-- All 30 checks pass against the actual pipeline output
-- Tolerance for non-deterministic behaviour: age imputation uses median (deterministic), salary imputation uses median (deterministic)
+- The script tests what the pipeline actually promised to do, not some ideal theoretical output
+- All 30 checks pass on the real downloaded output
+- Both age and salary imputation use the median which is deterministic, so results are consistent across runs
