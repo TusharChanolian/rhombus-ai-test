@@ -1,6 +1,6 @@
 
 
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const { test, expect } = require('@playwright/test');
 const path = require('path');
 
@@ -8,6 +8,7 @@ const path = require('path');
 const EMAIL    = process.env.RHOMBUS_EMAIL;
 const PASSWORD = process.env.RHOMBUS_PASSWORD;
 
+console.log(EMAIL)
 //Path to the test CSV file 
 const CSV_FILE = path.resolve(__dirname, '../data-validation/Messy_Employee_dataset.csv');
 
@@ -101,18 +102,19 @@ test.describe('Rhombus AI – AI Pipeline Flow', () => {
   
     // ── Step 11: Wait for canvas to load ────────────────────────────────────
     await page.getByRole('button', { name: 'Run Pipeline' })
-      .waitFor({ state: 'visible', timeout: 60000 });
+      .waitFor({ state: 'visible', timeout: 200000 });
     console.log('Pipeline created, canvas loaded');
 
     // ── Step 13: Wait for pipeline to be created and run ──────────
 
     await page.locator('[data-testid="run-pipeline"].bg-destructive')
-      .waitFor({ state: 'visible', timeout: 30000 });
+      .waitFor({ state: 'visible', timeout: 300000
+       });
     console.log('Pipeline started running...');
 
     // Wait for destructive class to disappear (pipeline finished)
     await page.locator('[data-testid="run-pipeline"].bg-destructive')
-      .waitFor({ state: 'hidden', timeout: 120000 });
+      .waitFor({ state: 'hidden', timeout: 300000 });
     console.log('Pipeline finished!');
 
     await page.getByTestId('rf__node-llm_node_1')

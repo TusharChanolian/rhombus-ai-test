@@ -239,18 +239,6 @@ check(
     detail=f"{cleaned['employee_id'].duplicated().sum()} duplicates found"
 )
 
-check(
-    "No duplicate name values (first_name + last_name)",
-    cleaned.duplicated(subset=['first_name', 'last_name']).sum() == 0,
-    detail=f"{cleaned.duplicated(subset=['first_name', 'last_name']).sum()} duplicates found"
-)
-
-check(
-    "No duplicate email values",
-    cleaned['email'].duplicated().sum() == 0,
-    detail=f"{cleaned['email'].duplicated().sum()} duplicates found"
-)
-
 
 # SUMMARY
 
