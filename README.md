@@ -184,7 +184,7 @@ python validate.py
 
 ## Demo Video
 
-🎥 [[Link to demo video](https://drive.google.com/file/d/1Iz5wpen64tQK2FpLIWxHYY1SWCRauQJB/view?usp=sharing)](#) ← *to be added*
+🎥 [[Link to demo video](https://drive.google.com/file/d/1Iz5wpen64tQK2FpLIWxHYY1SWCRauQJB/view?usp=sharing)](#)
 
 ---
 
